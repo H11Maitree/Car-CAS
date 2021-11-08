@@ -65,7 +65,8 @@
         const ctx = canvas.getContext('2d');
         var isPlaying = false;
         var numberofcar = 0;
-
+        let radar_lenght = 100;
+        let car_r = 24;
         function Car(x, y, r, colour, v, d) {
             numberofcar++;
             this.id = numberofcar
@@ -81,7 +82,7 @@
             this.dd = 5;//diff degree direction
             this.a = -0.2; //acceleration
 
-            this.draw = function () {
+            this.draw_radar = function () {
                 var colour_radar;
                 if (this.status == "running") {
                     colour_radar = "green";
@@ -95,22 +96,24 @@
 
                 ctx.beginPath();
                 ctx.fillStyle = colour_radar;
-                ctx.arc(this.x, this.y, 100, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, radar_lenght, 0, Math.PI * 2);
                 ctx.fill();
-
-
-                let dx = Math.cos(2 * Math.PI * (-this.d / 360)) * this.v
-                let dy = Math.sin(2 * Math.PI * (-this.d / 360)) * this.v
+                
+            }
+            this.draw_circle = function () {
                 ctx.beginPath();
                 ctx.fillStyle = this.colour;
                 ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
                 ctx.fill();
-
+                
+            }
+            this.draw_direction = function () {
+                let dx = Math.cos(2 * Math.PI * (-this.d / 360)) * this.v
+                let dy = Math.sin(2 * Math.PI * (-this.d / 360)) * this.v
                 ctx.beginPath();
                 ctx.moveTo(this.x, this.y);
                 ctx.strokeStyle = 'blue';
                 ctx.lineTo(this.x + (dx * 5), this.y + (dy * 5));
-
                 ctx.stroke();
             }
 
@@ -127,10 +130,15 @@
                             this.status = 'stop'
                         }
                     }
-                    else {
+                    else{
                             Cars.forEach(element => {
                                 if (this != element) {
-                                    if (Math.sqrt(Math.pow(this.x - element.x, 2) + Math.pow(this.y - element.y, 2)) < 100) {
+                                    let distance = Math.sqrt(Math.pow(this.x - element.x, 2) + Math.pow(this.y - element.y, 2))
+                                    if (distance < 2.5*car_r){
+                                        this.status = 'crashed';
+                                        element.status = 'crashed';
+                                    }
+                                    else if (distance < radar_lenght && this.status != 'crashed') {
                                         this.status = 'emergency';
                                     }
                                 }
@@ -151,9 +159,9 @@
                     }
                 }
 
-                this.draw();
-
-                ctx.stroke();
+                this.draw_radar();
+                this.draw_circle();
+                this.draw_direction();
             }
         }
         var Cars = [];
@@ -166,11 +174,10 @@
         // }
 
         canvas.addEventListener('click', function (e) {
-            let r = 20
-            if (isPlaying == false && (e.clientX + r < canvas.width && e.clientX - r > 0) && (e.clientY + r < canvas.height && e.clientY - r > 0)) {
+            if (isPlaying == false && (e.clientX + car_r < canvas.width && e.clientX - car_r > 0) && (e.clientY + car_r < canvas.height && e.clientY - car_r > 0)) {
                 infocard.style.display = '';
-                Cars.push(new Car(e.clientX, e.clientY, r, 'blue', 0, 0))
-                Cars[Cars.length - 1].draw();
+                Cars.push(new Car(e.clientX, e.clientY, car_r, 'blue', 0, 0))
+                Cars[Cars.length - 1].draw_circle();
             }
         });
 
@@ -196,7 +203,9 @@
                 Cars[Cars.length - 1].d = parseFloat(document.getElementById("d_in").value);
                 document.getElementById("v_in").value = ""
                 document.getElementById("d_in").value = ""
-                Cars[Cars.length - 1].draw();
+                Cars[Cars.length - 1].draw_radar();
+                Cars[Cars.length - 1].draw_circle();
+                Cars[Cars.length - 1].draw_direction();
             }
         });
 
