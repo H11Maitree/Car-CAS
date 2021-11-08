@@ -78,26 +78,26 @@
             this.v = v; //velocity
             this.d = d; //degree direction
 
-            this.dd = 4;//diff degree direction
+            this.dd = 5;//diff degree direction
             this.a = -0.2; //acceleration
 
             this.draw = function () {
                 var colour_radar;
-                if(this.status == "running"){
-                    colour_radar ="green";
-                }else if(this.status == "emergency"){
-                    colour_radar ="red";
-                }else if(this.status == "stop"){
-                    colour_radar ="yellow";
-                }else{
-                    colour_radar ="black";
+                if (this.status == "running") {
+                    colour_radar = "green";
+                } else if (this.status == "emergency") {
+                    colour_radar = "red";
+                } else if (this.status == "stop") {
+                    colour_radar = "yellow";
+                } else {
+                    colour_radar = "black";
                 }
 
                 ctx.beginPath();
                 ctx.fillStyle = colour_radar;
                 ctx.arc(this.x, this.y, 100, 0, Math.PI * 2);
                 ctx.fill();
-            
+
 
                 let dx = Math.cos(2 * Math.PI * (-this.d / 360)) * this.v
                 let dy = Math.sin(2 * Math.PI * (-this.d / 360)) * this.v
@@ -117,12 +117,26 @@
             this.animate = function () {
 
                 if (this.status == 'running' || this.status == 'emergency') {
-                    this.d += this.dd;
-                    if (this.v >= 0) {
-                        this.v += this.a;
-                    } else if (this.v < 0) {
-                        this.v = 0;
-                        this.status = 'stop'
+
+                    if (this.status == 'emergency') {
+                        this.d += this.dd;
+                        if (this.v >= 0) {
+                            this.v += this.a;
+                        } else if (this.v < 0) {
+                            this.v = 0;
+                            this.status = 'stop'
+                        }
+                    }
+                    else {
+                            Cars.forEach(element => {
+                                if (this != element) {
+                                    if (Math.sqrt(Math.pow(this.x - element.x, 2) + Math.pow(this.y - element.y, 2)) < 100) {
+                                        this.status = 'emergency';
+                                    }
+                                }
+                            });
+                        
+
                     }
                     let dx = Math.cos(2 * Math.PI * (-this.d / 360)) * this.v
                     let dy = Math.sin(2 * Math.PI * (-this.d / 360)) * this.v
@@ -201,6 +215,8 @@
         function ResetCanvas() {
             Cars = [];
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            isPlaying = true
+            RunClick()
         }
         Update();
 
