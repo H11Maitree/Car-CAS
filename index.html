@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>Title of the document</title>
+<link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -22,18 +23,26 @@
 </head>
 
 <body>
+    <div class="fixed text-black">
+        <button id="runbutton" onclick="RunClick()" style="font-size : 20px; width: 50px; height: 60px; background-color: white;">Run</button>
+    </div>
     <canvas id="playground"></canvas>
 
     <script>
+        const runbutton = document.getElementById("runbutton");
         const canvas = document.getElementById('playground');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         const ctx = canvas.getContext('2d');
-
+        var isPlaying = false;
+        var numberofcar = 0;
         function Car (x,y,r,colour,dx=5,dy=4){
+            numberofcar++;
+            this.id = numberofcar
             this.x = x;
             this.y = y;
             this.r = r;
+            this.isCrashed = false;
             this.colour = colour
 
             this.dx = dx;
@@ -51,20 +60,21 @@
                 ctx.lineTo(this.x+(this.dx*100), this.y+(this.dy*100));
                 
                 ctx.stroke();
-                console.log("wr")
             }
 
             this.animate = function(){
-                this.x += this.dx;
-                this.y += this.dy;
 
-                if (this.x+this.r > canvas.width || this.x - this.r<0){
-                    this.dx = -this.dx;
-                }
-                if (this.y+this.r > canvas.height || this.y - this.r<0){
-                    this.dy = -this.dy;
-                }
+                if(this.isCrashed == false){
+                    this.x += this.dx;
+                    this.y += this.dy;
 
+                    if (this.x+this.r > canvas.width || this.x - this.r<0){
+                        this.dx = -this.dx;
+                    }
+                    if (this.y+this.r > canvas.height || this.y - this.r<0){
+                        this.dy = -this.dy;
+                    }
+                }
                 this.draw();
                 
                 ctx.stroke();
@@ -80,7 +90,11 @@
         }
 
         canvas.addEventListener('click', function(e){
-            Cars.push(new Car(e.clientX,e.clientY,20,'blue',20,10))
+            let r=20
+            if(isPlaying==false &&(e.clientX+r < canvas.width && e.clientX - r>0)&&(e.clientY+r < canvas.height && e.clientY - r>0)){
+            Cars.push(new Car(e.clientX,e.clientY,r,'blue',20,10))
+            Cars[Cars.length-1].draw();
+        }
         });
 
         function Update(){
@@ -89,9 +103,24 @@
             for(let i=0;i<Cars.length;i++){
                 Cars[i].animate();
             }
-            requestAnimationFrame(Update)
+            if (isPlaying){requestAnimationFrame(Update);}
+            
         }
-        Update()
+        
+        function RunClick(){
+            isPlaying = !isPlaying;
+            if(isPlaying){
+                runbutton.innerHTML="Stop";
+                Update();
+            }
+            else{
+                runbutton.innerHTML="Run";
+            }
+            
+
+        }
+        Update();
+        
     </script>
 </body>
 
