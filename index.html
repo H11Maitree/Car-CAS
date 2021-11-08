@@ -26,8 +26,8 @@
 </head>
 
 <body>
-    <div class="fixed text-black max-w-sm w-full p-6">
-        <p class="text-white text-xs p-1">This simulator is a part of group 29's project for CS2066 </p>
+    <div class="fixed text-black max-w-md w-full p-6">
+        <p class="text-white text-xs p-1">This simulator is a part of group 29's project for CS2066 V.1.1</p>
         <button class="bg-green-500 text-white font-bold rounded" id="resetbutton" onclick="ResetCanvas()"
             style="width: 50px; height: 60px;">Reset</button>
         <button class="bg-red-500 text-white font-bold rounded" id="runbutton" onclick="RunClick()"
@@ -39,7 +39,7 @@
                 <h2 class="text-3xl font-bold">Add New Vehicle</h2>
                 <!-- <p class="text-s py-2">Give infor</p> -->
                 <div class="text-s py-1">
-                    <label for="velocity">Velocity (0-30):</label>
+                    <label for="velocity">Velocity (0-25):</label>
                     <input class="" type="number" id="v_in" name="velocity">
                 </div>
                 <div class="text-s py-1">
@@ -80,7 +80,7 @@
             this.v = v; //velocity
             this.d = d; //degree direction
 
-            this.dd = 5;//diff degree direction
+            this.dd = 10;//diff degree direction
             this.a = -0.2; //acceleration
 
             this.draw_radar = function () {
@@ -113,7 +113,7 @@
                 let dy = Math.sin(2 * Math.PI * (-this.d / 360)) * this.v
                 ctx.beginPath();
                 ctx.moveTo(this.x, this.y);
-                ctx.strokeStyle = 'blue';
+                ctx.strokeStyle = 'purple';
                 ctx.lineTo(this.x + (dx * 5), this.y + (dy * 5));
                 ctx.stroke();
             }
@@ -123,19 +123,19 @@
                 if (this.status == 'running' || this.status == 'emergency') {
 
                     if (this.status == 'emergency') {
-                        this.d += this.dd;
                         if (this.v > 0) {
                             this.v += this.a;
+                            this.d += this.dd;
                         } else if (this.v <= 0) {
                             this.v = 0;
                             this.status = 'stop'
                         }
                     }
+                    if(this.status == 'running' || this.status == 'emergency'){
                     Cars.forEach(element => {
                         if (this != element) {
                             let distance = Math.sqrt(Math.pow(this.x - element.x, 2) + Math.pow(this.y - element.y, 2))
-                            console.log()
-                            if (distance * 1.2 < car_r) {
+                            if (distance < car_r*2.05) {
                                 this.status = 'crashed';
                                 element.status = 'crashed';
                             }
@@ -144,6 +144,7 @@
                             }
                         }
                     });
+                }
 
                     let dx = Math.cos(2 * Math.PI * (-this.d / 360)) * this.v
                     let dy = Math.sin(2 * Math.PI * (-this.d / 360)) * this.v
