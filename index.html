@@ -99,14 +99,14 @@
                 ctx.fillStyle = colour_radar;
                 ctx.arc(this.x, this.y, radar_lenght, 0, Math.PI * 2);
                 ctx.fill();
-                
+
             }
             this.draw_circle = function () {
                 ctx.beginPath();
                 ctx.fillStyle = this.colour;
                 ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
                 ctx.fill();
-                
+
             }
             this.draw_direction = function () {
                 let dx = Math.cos(2 * Math.PI * (-this.d / 360)) * this.v
@@ -124,29 +124,27 @@
 
                     if (this.status == 'emergency') {
                         this.d += this.dd;
-                        if (this.v >= 0) {
+                        if (this.v > 0) {
                             this.v += this.a;
-                        } else if (this.v < 0) {
+                        } else if (this.v <= 0) {
                             this.v = 0;
                             this.status = 'stop'
                         }
                     }
-                    else{
-                            Cars.forEach(element => {
-                                if (this != element) {
-                                    let distance = Math.sqrt(Math.pow(this.x - element.x, 2) + Math.pow(this.y - element.y, 2))
-                                    if (distance < 2.5*car_r){
-                                        this.status = 'crashed';
-                                        element.status = 'crashed';
-                                    }
-                                    else if (distance < radar_lenght && this.status != 'crashed') {
-                                        this.status = 'emergency';
-                                    }
-                                }
-                            });
-                        
+                    Cars.forEach(element => {
+                        if (this != element) {
+                            let distance = Math.sqrt(Math.pow(this.x - element.x, 2) + Math.pow(this.y - element.y, 2))
+                            console.log()
+                            if (distance * 1.2 < car_r) {
+                                this.status = 'crashed';
+                                element.status = 'crashed';
+                            }
+                            else if (distance < radar_lenght && this.status != 'crashed') {
+                                this.status = 'emergency';
+                            }
+                        }
+                    });
 
-                    }
                     let dx = Math.cos(2 * Math.PI * (-this.d / 360)) * this.v
                     let dy = Math.sin(2 * Math.PI * (-this.d / 360)) * this.v
                     this.x += dx;
