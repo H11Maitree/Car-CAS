@@ -124,7 +124,7 @@
             let r = 20
             if (isPlaying == false && (e.clientX + r < canvas.width && e.clientX - r > 0) && (e.clientY + r < canvas.height && e.clientY - r > 0)) {
                 infocard.style.display = '';
-                Cars.push(new Car(e.clientX, e.clientY, r, 'blue', 10, 200))
+                Cars.push(new Car(e.clientX, e.clientY, r, 'blue', 0, 0))
                 Cars[Cars.length - 1].draw();
             }
         });
@@ -146,6 +146,8 @@
         // }
         form.addEventListener('submit', function(){
             infocard.style.display = 'none';
+            Cars[Cars.length - 1].v= Math.random()*15;
+            Cars[Cars.length - 1].d = Math.random()*360;
             Cars[Cars.length - 1].draw();
         });
 
