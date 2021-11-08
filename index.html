@@ -36,9 +36,14 @@
         <div class="bg-white max-w-md w-full p-6">
             <form id="myForm" onsubmit="return false">
             <h2 class="text-3xl font-bold">Add New Vehicle</h2>
-            <p class="text-s py-2">Give infor</p>
-
-            <br>
+            <!-- <p class="text-s py-2">Give infor</p> -->
+            <div class="text-s py-1"> 
+            <label for="velocity">Velocity (0-30):</label>
+            <input class="" type="number" id="v_in" name="velocity"></div>
+            <div class="text-s py-1"> 
+                <label for="direction">Direction (0-360 degree):</label>
+                <input class="" type="number" id="d_in" name="direction"></div>
+                <br>
             <div> <input type="submit" class="bg-blue-500 text-white font-bold w-full rounded-full py-3" id="saveinfo"
                 value="Submit"> </div>
                 </form>
@@ -146,8 +151,10 @@
         // }
         form.addEventListener('submit', function(){
             infocard.style.display = 'none';
-            Cars[Cars.length - 1].v= Math.random()*15;
-            Cars[Cars.length - 1].d = Math.random()*360;
+            Cars[Cars.length - 1].v= parseFloat(document.getElementById("v_in").value);
+            Cars[Cars.length - 1].d =parseFloat(document.getElementById("d_in").value);
+            document.getElementById("v_in").value=""
+            document.getElementById("d_in").value=""
             Cars[Cars.length - 1].draw();
         });
 
