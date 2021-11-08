@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>Title of the document</title>
-<link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <title>Title of the document</title>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -10,117 +11,158 @@
             box-sizing: border-box;
 
         }
+
         canvas {
             background-color: gray;
         }
-        body{
+
+        body {
             width: 100vw;
             height: 100vh;
             overflow: hidden;
         }
     </style>
-    
+
 </head>
 
 <body>
-    <div class="fixed text-black">
-        <button id="runbutton" onclick="RunClick()" style="font-size : 20px; width: 50px; height: 60px; background-color: white;">Run</button>
+    <div class="fixed text-black max-w-sm w-full p-6">
+        <button class="bg-green-500 text-white font-bold rounded" id="resetbutton" onclick=""
+            style="width: 50px; height: 60px;">Reset</button>
+        <button class="bg-red-500 text-white font-bold rounded" id="runbutton" onclick="RunClick()"
+            style="width: 50px; height: 60px;">Run</button>
+    </div>
+    <div class="fixed inset-0 flex items-center justify-center" id="infocard" style="display: none;">
+        <div class="bg-white max-w-md w-full p-6">
+            <form id="myForm" onsubmit="return false">
+            <h2 class="text-3xl font-bold">Add New Vehicle</h2>
+            <p class="text-s py-2">Give infor</p>
+
+            <br>
+            <div> <input type="submit" class="bg-blue-500 text-white font-bold w-full rounded-full py-3" id="saveinfo"
+                value="Submit"> </div>
+                </form>
+        </div>
     </div>
     <canvas id="playground"></canvas>
 
     <script>
+        var form = document.getElementById("myForm");
+        function handleForm(event) { event.preventDefault(); } 
         const runbutton = document.getElementById("runbutton");
+        const infocard = document.getElementById('infocard');
+        const savebutton = document.getElementById('saveinfo');
         const canvas = document.getElementById('playground');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         const ctx = canvas.getContext('2d');
         var isPlaying = false;
         var numberofcar = 0;
-        function Car (x,y,r,colour,dx=5,dy=4){
+
+        function Car(x, y, r, colour, v, d) {
             numberofcar++;
             this.id = numberofcar
             this.x = x;
             this.y = y;
             this.r = r;
-            this.isCrashed = false;
+            this.status = "running" //"crashed" "emergency" "out"
             this.colour = colour
 
-            this.dx = dx;
-            this.dy = dy;
-            
-            this.draw = function(){
+            this.v = v; //velocity
+            this.d = d; //degree direction
+
+            this.dd = 3;//diff degree direction
+            this.b = 1; //break
+
+            this.draw = function () {
+
+                let dx = Math.cos(2 * Math.PI * (-this.d / 360)) * this.v
+                let dy = Math.sin(2 * Math.PI * (-this.d / 360)) * this.v
                 ctx.beginPath();
                 ctx.fillStyle = this.colour;
-                ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
                 ctx.fill();
 
                 ctx.beginPath();
                 ctx.moveTo(this.x, this.y);
                 ctx.strokeStyle = 'blue';
-                ctx.lineTo(this.x+(this.dx*100), this.y+(this.dy*100));
-                
+                ctx.lineTo(this.x + (dx * 5), this.y + (dy * 5));
+
                 ctx.stroke();
             }
 
-            this.animate = function(){
+            this.animate = function () {
 
-                if(this.isCrashed == false){
-                    this.x += this.dx;
-                    this.y += this.dy;
+                if (this.status == 'running') {
+                    let dx = Math.cos(2 * Math.PI * (-this.d / 360)) * this.v
+                    let dy = Math.sin(2 * Math.PI * (-this.d / 360)) * this.v
+                    this.x += dx;
+                    this.y += dy;
 
-                    if (this.x+this.r > canvas.width || this.x - this.r<0){
-                        this.dx = -this.dx;
+                    if (this.x + this.r > canvas.width || this.x - this.r < 0) {
+                        this.status = 'out';
                     }
-                    if (this.y+this.r > canvas.height || this.y - this.r<0){
-                        this.dy = -this.dy;
+                    if (this.y + this.r > canvas.height || this.y - this.r < 0) {
+                        this.status = 'out';
                     }
                 }
                 this.draw();
-                
+
                 ctx.stroke();
             }
         }
-        const Cars=[];
-        for(let i=0;i<10;i++){
-            let r = Math.floor(Math.random()*30) + 15;
-            let x = Math.random()*(canvas.width-r*2)+r;
-            let y = Math.random()*(canvas.height-r*2)+r;
+        const Cars = [];
+        for (let i = 0; i < 10; i++) {
+            let r = Math.floor(Math.random() * 30) + 15;
+            let x = Math.random() * (canvas.width - r * 2) + r;
+            let y = Math.random() * (canvas.height - r * 2) + r;
             let colour = 'red'
-            Cars.push(new Car(x,y,r,colour,1,1))
+            Cars.push(new Car(x, y, r, colour, 3, Math.floor(Math.random() * 360)))
         }
 
-        canvas.addEventListener('click', function(e){
-            let r=20
-            if(isPlaying==false &&(e.clientX+r < canvas.width && e.clientX - r>0)&&(e.clientY+r < canvas.height && e.clientY - r>0)){
-            Cars.push(new Car(e.clientX,e.clientY,r,'blue',20,10))
-            Cars[Cars.length-1].draw();
-        }
+        canvas.addEventListener('click', function (e) {
+            let r = 20
+            if (isPlaying == false && (e.clientX + r < canvas.width && e.clientX - r > 0) && (e.clientY + r < canvas.height && e.clientY - r > 0)) {
+                infocard.style.display = '';
+                Cars.push(new Car(e.clientX, e.clientY, r, 'blue', 10, 200))
+                Cars[Cars.length - 1].draw();
+            }
         });
 
-        function Update(){
-            ctx.clearRect(0,0,canvas.width,canvas.height)
-            
-            for(let i=0;i<Cars.length;i++){
+        function Update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+            for (let i = 0; i < Cars.length; i++) {
                 Cars[i].animate();
             }
-            if (isPlaying){requestAnimationFrame(Update);}
-            
+            if (isPlaying) { requestAnimationFrame(Update); }
+
         }
+
         
-        function RunClick(){
+        // function SaveInfo() {
+        //     infocard.style.display = 'none';
+        //     Cars[Cars.length - 1].draw();
+        // }
+        form.addEventListener('submit', function(){
+            infocard.style.display = 'none';
+            Cars[Cars.length - 1].draw();
+        });
+
+        function RunClick() {
             isPlaying = !isPlaying;
-            if(isPlaying){
-                runbutton.innerHTML="Stop";
+            if (isPlaying) {
+                runbutton.innerHTML = "Stop";
                 Update();
             }
-            else{
-                runbutton.innerHTML="Run";
+            else {
+                runbutton.innerHTML = "Run";
             }
-            
+
 
         }
         Update();
-        
+
     </script>
 </body>
 
