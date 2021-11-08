@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Title of the document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+        }
+        canvas {
+            background-color: gray;
+        }
+        body{
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+    </style>
+    
+</head>
+
+<body>
+    <canvas id="playground"></canvas>
+
+    <script>
+        const canvas = document.getElementById('playground');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const ctx = canvas.getContext('2d');
+
+        function Car (x,y,r,colour,dx=5,dy=4){
+            this.x = x;
+            this.y = y;
+            this.r = r;
+            this.colour = colour
+
+            this.dx = dx;
+            this.dy = dy;
+            
+            this.draw = function(){
+                ctx.beginPath();
+                ctx.fillStyle = this.colour;
+                ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.strokeStyle = 'blue';
+                ctx.lineTo(this.x+(this.dx*100), this.y+(this.dy*100));
+                
+                ctx.stroke();
+                console.log("wr")
+            }
+
+            this.animate = function(){
+                this.x += this.dx;
+                this.y += this.dy;
+
+                if (this.x+this.r > canvas.width || this.x - this.r<0){
+                    this.dx = -this.dx;
+                }
+                if (this.y+this.r > canvas.height || this.y - this.r<0){
+                    this.dy = -this.dy;
+                }
+
+                this.draw();
+                
+                ctx.stroke();
+            }
+        }
+        const Cars=[];
+        for(let i=0;i<10;i++){
+            let r = Math.floor(Math.random()*30) + 15;
+            let x = Math.random()*(canvas.width-r*2)+r;
+            let y = Math.random()*(canvas.height-r*2)+r;
+            let colour = 'red'
+            Cars.push(new Car(x,y,r,colour,1,1))
+        }
+
+        canvas.addEventListener('click', function(e){
+            Cars.push(new Car(e.clientX,e.clientY,20,'blue',20,10))
+        });
+
+        function Update(){
+            ctx.clearRect(0,0,canvas.width,canvas.height)
+            
+            for(let i=0;i<Cars.length;i++){
+                Cars[i].animate();
+            }
+            requestAnimationFrame(Update)
+        }
+        Update()
+    </script>
+</body>
+
+</html>
