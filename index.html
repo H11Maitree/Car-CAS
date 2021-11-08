@@ -159,9 +159,9 @@
                     }
                 }
 
-                this.draw_radar();
-                this.draw_circle();
-                this.draw_direction();
+                // this.draw_radar();
+                // this.draw_circle();
+                // this.draw_direction();
             }
         }
         var Cars = [];
@@ -186,6 +186,15 @@
 
             for (let i = 0; i < Cars.length; i++) {
                 Cars[i].animate();
+            }
+            for (let i = 0; i < Cars.length; i++) {
+                Cars[i].draw_radar();
+            }
+            for (let i = 0; i < Cars.length; i++) {
+                Cars[i].draw_circle();
+            }
+            for (let i = 0; i < Cars.length; i++) {
+                Cars[i].draw_direction();
             }
             if (isPlaying) { requestAnimationFrame(Update); }
 
