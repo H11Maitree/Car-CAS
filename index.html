@@ -63,6 +63,24 @@
         const canvas = document.getElementById('playground');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+
+        window.addEventListener("resize", function () {
+            canvas.setAttribute("width", window.innerWidth);
+            canvas.setAttribute("height", window.innerHeight)
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+            for (let i = 0; i < Cars.length; i++) {
+                Cars[i].draw_radar();
+            }
+            for (let i = 0; i < Cars.length; i++) {
+                Cars[i].draw_circle();
+            }
+            for (let i = 0; i < Cars.length; i++) {
+                Cars[i].draw_direction();
+            }
+            if (isPlaying) { requestAnimationFrame(Update); }
+        })
+
         const ctx = canvas.getContext('2d');
         var isPlaying = false;
         var numberofcar = 0;
@@ -131,20 +149,20 @@
                             this.status = 'stop'
                         }
                     }
-                    if(this.status == 'running' || this.status == 'emergency'){
-                    Cars.forEach(element => {
-                        if (this != element) {
-                            let distance = Math.sqrt(Math.pow(this.x - element.x, 2) + Math.pow(this.y - element.y, 2))
-                            if (distance < car_r*2.05) {
-                                this.status = 'crashed';
-                                element.status = 'crashed';
+                    if (this.status == 'running' || this.status == 'emergency') {
+                        Cars.forEach(element => {
+                            if (this != element) {
+                                let distance = Math.sqrt(Math.pow(this.x - element.x, 2) + Math.pow(this.y - element.y, 2))
+                                if (distance < car_r * 2.05) {
+                                    this.status = 'crashed';
+                                    element.status = 'crashed';
+                                }
+                                else if (distance < radar_lenght && this.status != 'crashed') {
+                                    this.status = 'emergency';
+                                }
                             }
-                            else if (distance < radar_lenght && this.status != 'crashed') {
-                                this.status = 'emergency';
-                            }
-                        }
-                    });
-                }
+                        });
+                    }
 
                     let dx = Math.cos(2 * Math.PI * (-this.d / 360)) * this.v
                     let dy = Math.sin(2 * Math.PI * (-this.d / 360)) * this.v
