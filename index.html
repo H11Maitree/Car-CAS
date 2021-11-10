@@ -175,14 +175,19 @@
                                     }else{
                                         enedi = enedi+90;
                                     }
-                                    var camd = (this.d - enedi)%360; // compare enemy degree with our direction
+                                    var camd = (enedi-this.d)%360; // compare enemy degree with our direction
                                     
                                     if(camd<0){
                                         camd = camd+360;
                                     }
-
-
-                                    console.log("y%f x%f,degree %f",this.y,this.x,enedi);
+                                    var rotate_left = true;
+                                    if(camd<=180){
+                                        rotate_left = false;
+                                        this.dd = -Math.abs(this.dd)
+                                    }
+                                    
+                                    console.log("y%f x%f,degree %f",this.y,this.x,camd);
+                                    console.log("going left",rotate_left);
                                 }
                             }
                         });
