@@ -63,7 +63,9 @@
         const canvas = document.getElementById('playground');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-
+        function getcanvas(){
+            console.log("%f * %f",canvas.width,canvas.height);
+        }
         window.addEventListener("resize", function () {
             canvas.setAttribute("width", window.innerWidth);
             canvas.setAttribute("height", window.innerHeight)
@@ -98,7 +100,8 @@
             this.v = v; //velocity
             this.d = d; //degree direction
 
-            this.dd = 10;//diff degree direction
+            this.max_dd = 10;//diff degree direction
+            this.dd = 0
             this.a = -0.2; //acceleration
 
             this.draw_radar = function () {
@@ -109,6 +112,8 @@
                     colour_radar = "red";
                 } else if (this.status == "stop") {
                     colour_radar = "yellow";
+                }else if (this.status == "out") {
+                    colour_radar = "white";
                 } else {
                     colour_radar = "black";
                 }
@@ -157,6 +162,12 @@
                         }
                     }
                     if (this.status == 'running' || this.status == 'emergency') {
+                        var speed_weight_left=0.0;
+                        var speed_weight_right=0.0;
+                        var totalval_left=0.0;
+                        var totalval_right=0.0;
+                        var totaldirec = 0.0;
+                        var totalcar=0;
                         Cars.forEach(element => {
                             if (this != element) {
                                 let distance = Math.sqrt(Math.pow(this.x - element.x, 2) + Math.pow(this.y - element.y, 2))
@@ -169,29 +180,84 @@
                                     let difloX= element.x-this.x;
                                     let difloY= element.y-this.y;
                                     var enedi = (Math.atan((difloX)/(difloY))/(Math.PI)*180);
-
+                                    
                                     if (difloY>0){
-                                        enedi = enedi+270;
+                                        //back
+                                        //console.log("back");
+                                        enedi = 270+enedi;
                                     }else{
+                                        //front
+                                        //console.log("front");
                                         enedi = enedi+90;
                                     }
+                                    //console.log("enedi %f",enedi);
                                     var camd = (enedi-this.d)%360; // compare enemy degree with our direction
                                     
                                     if(camd<0){
                                         camd = camd+360;
                                     }
-                                    var rotate_left = true;
-                                    if(camd<=180){
-                                        rotate_left = false;
-                                        this.dd = -Math.abs(this.dd)
+                                    camd = camd-180; //plus menas left side 0-180 degree
+                                    // var rotate_left = true;
+                                    // if(camd<=0){
+                                    //     rotate_left = false;
+                                    //     this.dd = -Math.abs(this.dd)
+                                    // }
+                                    //console.log("camd %f",camd);
+                                    totaldirec += camd;
+                                    if(camd<=0){
+                                        //on right
+                                        speed_weight_right += element.v;
+                                        totalval_right += element.v*(-camd);
+                                    }else{
+                                        //on left
+                                        speed_weight_left += element.v;
+                                        totalval_left += element.v*(camd);
                                     }
-                                    
-                                    console.log("y%f x%f,degree %f",this.y,this.x,camd);
-                                    console.log("going left",rotate_left);
+                                    totalcar += 1;
+                                    //console.log("y%f x%f,degree %f",this.y,this.x,camd);
+                                    // onsole.log("going left",rotate_left);
                                 }
                             }
                         });
-                    }
+
+                        if (this.status == 'emergency'){
+
+                            if(totalcar==0){
+                                this.dd = 0;
+                            }
+                            else if(speed_weight_left==0 && speed_weight_right==0){
+                                if(totaldirec <0){
+                                    //rotate right
+                                    this.dd = -this.max_dd;
+                                    //console.log("gori");
+                                }else if(totaldirec >0){
+                                    this.dd = this.max_dd;
+                                    //console.log("gole");
+                                }else{
+                                    this.dd = 0;
+                                }
+                            }
+                            else if(speed_weight_left==0){
+                                    //rotate right
+                                    this.dd = -this.max_dd;
+                            }
+                            else if(speed_weight_right==0){
+                                    //rotate left
+                                    this.dd = this.max_dd;
+                                }
+                            else{
+                                let total_ratio = (totalval_left-totalval_right)/(speed_weight_left+speed_weight_right)/180;
+                                if(total_ratio>0){
+                                    this.dd = this.max_dd*total_ratio;
+                                    
+                                }
+                            }
+                            //console.log("td:%f x:%f y:%f dd:%f c:%d",totaldirec,this.x,this.y,this.dd,totalcar);
+                        }
+
+                        }
+
+                    
 
                     let dx = Math.cos(2 * Math.PI * (-this.d / 360)) * this.v
                     let dy = Math.sin(2 * Math.PI * (-this.d / 360)) * this.v
@@ -205,12 +271,13 @@
                         this.status = 'out';
                     }
                 }
+            }
 
                 // this.draw_radar();
                 // this.draw_circle();
                 // this.draw_direction();
             }
-        }
+        
         var Cars = [];
         // for (let i = 0; i < 10; i++) {
         //     let r = Math.floor(Math.random() * 30) + 15;
@@ -220,6 +287,12 @@
         //     Cars.push(new Car(x, y, r, colour, 3, Math.floor(Math.random() * 360)))
         // }
 
+        function cadd(x,y,v,d){
+            Cars.push(new Car(x, y, car_r, 'blue', v, d));
+            Cars[Cars.length - 1].draw_radar();
+            Cars[Cars.length - 1].draw_circle();
+            Cars[Cars.length - 1].draw_direction();
+        }
         canvas.addEventListener('click', function (e) {
             if (isPlaying == false && (e.clientX + car_r < canvas.width && e.clientX - car_r > 0) && (e.clientY + car_r < canvas.height && e.clientY - car_r > 0)) {
                 infocard.style.display = '';
