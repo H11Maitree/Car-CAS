@@ -84,7 +84,7 @@
         const ctx = canvas.getContext('2d');
         var isPlaying = false;
         var numberofcar = 0;
-        let radar_lenght = 200;
+        let radar_lenght = 150;
         let car_r = 15;
         function Car(x, y, r, colour, v, d) {
             numberofcar++;
@@ -115,7 +115,7 @@
 
                 ctx.beginPath();
                 ctx.fillStyle = colour_radar;
-                ctx.arc(this.x, this.y, radar_lenght, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, radar_lenght/2, 0, Math.PI * 2);
                 ctx.fill();
 
             }
@@ -144,6 +144,13 @@
                         if (this.v > 0) {
                             this.v += this.a;
                             this.d += this.dd;
+                            
+                            if(this.d>360){
+                                this.d = this.d-360;
+                            }else if(this.d<0){
+                                this.d = this.d+360;
+                            }
+
                         } else if (this.v <= 0) {
                             this.v = 0;
                             this.status = 'stop'
@@ -159,6 +166,23 @@
                                 }
                                 else if (distance < radar_lenght && this.status != 'crashed') {
                                     this.status = 'emergency';
+                                    let difloX= element.x-this.x;
+                                    let difloY= element.y-this.y;
+                                    var enedi = (Math.atan((difloX)/(difloY))/(Math.PI)*180);
+
+                                    if (difloY>0){
+                                        enedi = enedi+270;
+                                    }else{
+                                        enedi = enedi+90;
+                                    }
+                                    var camd = (this.d - enedi)%360; // compare enemy degree with our direction
+                                    
+                                    if(camd<0){
+                                        camd = camd+360;
+                                    }
+
+
+                                    console.log("y%f x%f,degree %f",this.y,this.x,enedi);
                                 }
                             }
                         });
