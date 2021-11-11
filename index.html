@@ -32,6 +32,26 @@
             style="width: 50px; height: 60px;">Reset</button>
         <button class="bg-red-500 text-white font-bold rounded" id="runbutton" onclick="RunClick()"
             style="width: 50px; height: 60px;">Run</button>
+        <div class="p-1">
+        </div>
+
+        <button class="bg-blue-500 text-white font-bold rounded" id="demobutton" onclick="DemoClick()"
+            style="width: 50px; height: 60px;">Demo</button>
+    </div>
+    <div class="fixed inset-0 flex items-center justify-center" id="democard" style="display: none;">
+        <div class="bg-white max-w-md w-full p-6">
+            <h2 class="text-3xl font-bold">Select Scnerio</h2>
+            <button class="bg-green-500 text-white w-full font-bold rounded" id="scn1" onclick="AddScnerio(1)"
+                style="height: 30px;">Triagle Crash</button>
+            <div class="p-1">
+            </div>
+            <button class="bg-green-500 text-white w-full font-bold rounded" id="scn1" onclick="AddScnerio(2)"
+                style="height: 30px;">Random 10 Cars</button>
+            <div class="p-1">
+            </div>
+            <button class="bg-red-500 text-white w-full font-bold rounded" id="clo1" onclick="AddScnerio(0)"
+                style="height: 30px;">Close this window</button>
+        </div>
     </div>
     <div class="fixed inset-0 flex items-center justify-center" id="infocard" style="display: none;">
         <div class="bg-white max-w-md w-full p-6">
@@ -59,12 +79,13 @@
         function handleForm(event) { event.preventDefault(); }
         const runbutton = document.getElementById("runbutton");
         const infocard = document.getElementById('infocard');
+        const democard = document.getElementById('democard');
         const savebutton = document.getElementById('saveinfo');
         const canvas = document.getElementById('playground');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        function getcanvas(){
-            console.log("%f * %f",canvas.width,canvas.height);
+        function getcanvas() {
+            console.log("%f * %f", canvas.width, canvas.height);
         }
         window.addEventListener("resize", function () {
             canvas.setAttribute("width", window.innerWidth);
@@ -112,7 +133,7 @@
                     colour_radar = "red";
                 } else if (this.status == "stop") {
                     colour_radar = "yellow";
-                }else if (this.status == "out") {
+                } else if (this.status == "out") {
                     colour_radar = "white";
                 } else {
                     colour_radar = "black";
@@ -120,7 +141,7 @@
 
                 ctx.beginPath();
                 ctx.fillStyle = colour_radar;
-                ctx.arc(this.x, this.y, radar_lenght/2, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, radar_lenght / 2, 0, Math.PI * 2);
                 ctx.fill();
 
             }
@@ -149,11 +170,11 @@
                         if (this.v > 0) {
                             this.v += this.a;
                             this.d += this.dd;
-                            
-                            if(this.d>360){
-                                this.d = this.d-360;
-                            }else if(this.d<0){
-                                this.d = this.d+360;
+
+                            if (this.d > 360) {
+                                this.d = this.d - 360;
+                            } else if (this.d < 0) {
+                                this.d = this.d + 360;
                             }
 
                         } else if (this.v <= 0) {
@@ -162,12 +183,12 @@
                         }
                     }
                     if (this.status == 'running' || this.status == 'emergency') {
-                        var speed_weight_left=0.0;
-                        var speed_weight_right=0.0;
-                        var totalval_left=0.0;
-                        var totalval_right=0.0;
+                        var speed_weight_left = 0.0;
+                        var speed_weight_right = 0.0;
+                        var totalval_left = 0.0;
+                        var totalval_right = 0.0;
                         var totaldirec = 0.0;
-                        var totalcar=0;
+                        var totalcar = 0;
                         Cars.forEach(element => {
                             if (this != element) {
                                 let distance = Math.sqrt(Math.pow(this.x - element.x, 2) + Math.pow(this.y - element.y, 2))
@@ -177,26 +198,26 @@
                                 }
                                 else if (distance < radar_lenght && this.status != 'crashed') {
                                     this.status = 'emergency';
-                                    let difloX= element.x-this.x;
-                                    let difloY= element.y-this.y;
-                                    var enedi = (Math.atan((difloX)/(difloY))/(Math.PI)*180);
-                                    
-                                    if (difloY>0){
+                                    let difloX = element.x - this.x;
+                                    let difloY = element.y - this.y;
+                                    var enedi = (Math.atan((difloX) / (difloY)) / (Math.PI) * 180);
+
+                                    if (difloY > 0) {
                                         //back
                                         //console.log("back");
-                                        enedi = 270+enedi;
-                                    }else{
+                                        enedi = 270 + enedi;
+                                    } else {
                                         //front
                                         //console.log("front");
-                                        enedi = enedi+90;
+                                        enedi = enedi + 90;
                                     }
                                     //console.log("enedi %f",enedi);
-                                    var camd = (enedi-this.d)%360; // compare enemy degree with our direction
-                                    
-                                    if(camd<0){
-                                        camd = camd+360;
+                                    var camd = (enedi - this.d) % 360; // compare enemy degree with our direction
+
+                                    if (camd < 0) {
+                                        camd = camd + 360;
                                     }
-                                    camd = camd-180; //plus menas left side 0-180 degree
+                                    camd = camd - 180; //plus menas left side 0-180 degree
                                     // var rotate_left = true;
                                     // if(camd<=0){
                                     //     rotate_left = false;
@@ -204,14 +225,14 @@
                                     // }
                                     //console.log("camd %f",camd);
                                     totaldirec += camd;
-                                    if(camd<=0){
+                                    if (camd <= 0) {
                                         //on right
                                         speed_weight_right += element.v;
-                                        totalval_right += element.v*(-camd);
-                                    }else{
+                                        totalval_right += element.v * (-camd);
+                                    } else {
                                         //on left
                                         speed_weight_left += element.v;
-                                        totalval_left += element.v*(camd);
+                                        totalval_left += element.v * (camd);
                                     }
                                     totalcar += 1;
                                     //console.log("y%f x%f,degree %f",this.y,this.x,camd);
@@ -220,48 +241,48 @@
                             }
                         });
 
-                        if (this.status == 'emergency'){
+                        if (this.status == 'emergency') {
 
-                            if(totalcar==0){
+                            if (totalcar == 0) {
                                 this.dd = 0;
                             }
-                            else if(speed_weight_left==0 && speed_weight_right==0){
-                                if(totaldirec <0){
+                            else if (speed_weight_left == 0 && speed_weight_right == 0) {
+                                if (totaldirec < 0) {
                                     //rotate right
                                     this.dd = -this.max_dd;
                                     //console.log("gori");
-                                }else if(totaldirec >0){
+                                } else if (totaldirec > 0) {
                                     this.dd = this.max_dd;
                                     //console.log("gole");
-                                }else{
+                                } else {
                                     this.dd = 0;
                                 }
                             }
-                            else if(speed_weight_left==0){
-                                    //rotate right
-                                    this.dd = -this.max_dd;
+                            else if (speed_weight_left == 0) {
+                                //rotate right
+                                this.dd = -this.max_dd;
                             }
-                            else if(speed_weight_right==0){
-                                    //rotate left
-                                    this.dd = this.max_dd;
-                                }
-                            else{
-                                let total_ratio = (totalval_left-totalval_right)/(speed_weight_left+speed_weight_right)/180;
-                                if(total_ratio<1 && total_ratio>-1){
+                            else if (speed_weight_right == 0) {
+                                //rotate left
+                                this.dd = this.max_dd;
+                            }
+                            else {
+                                let total_ratio = (totalval_left - totalval_right) / (speed_weight_left + speed_weight_right) / 180;
+                                if (total_ratio < 1 && total_ratio > -1) {
                                     //rotate right as human reflection on UK stlye road
                                     this.dd = -this.max_dd;
                                     //this.dd = this.max_dd; US road
                                 }
-                                else if(total_ratio>0){
-                                    this.dd = this.max_dd*total_ratio;
+                                else if (total_ratio > 0) {
+                                    this.dd = this.max_dd * total_ratio;
                                 }
                             }
                             //console.log("td:%f x:%f y:%f dd:%f c:%d",totaldirec,this.x,this.y,this.dd,totalcar);
                         }
 
-                        }
+                    }
 
-                    
+
 
                     let dx = Math.cos(2 * Math.PI * (-this.d / 360)) * this.v
                     let dy = Math.sin(2 * Math.PI * (-this.d / 360)) * this.v
@@ -277,11 +298,11 @@
                 }
             }
 
-                // this.draw_radar();
-                // this.draw_circle();
-                // this.draw_direction();
-            }
-        
+            // this.draw_radar();
+            // this.draw_circle();
+            // this.draw_direction();
+        }
+
         var Cars = [];
         // for (let i = 0; i < 10; i++) {
         //     let r = Math.floor(Math.random() * 30) + 15;
@@ -291,7 +312,7 @@
         //     Cars.push(new Car(x, y, r, colour, 3, Math.floor(Math.random() * 360)))
         // }
 
-        function cadd(x,y,v,d){
+        function cadd(x, y, v, d) {
             Cars.push(new Car(x, y, car_r, 'blue', v, d));
             Cars[Cars.length - 1].draw_radar();
             Cars[Cars.length - 1].draw_circle();
@@ -342,6 +363,28 @@
             }
         });
 
+        function DemoClick() {
+            democard.style.display = '';
+
+        }
+        function AddScnerio(scnnumber) {
+            let Xcenter = canvas.width / 2;
+            let Ycenter = canvas.height / 2;
+
+            if (scnnumber == 1) {
+                cadd(Xcenter + 150, Ycenter, 6, 180);
+                cadd(Xcenter - 75, Ycenter - 129.9, 6, 300);
+                cadd(Xcenter - 75, Ycenter + 129.9, 6, 60);
+                document.getElementById('scn1').style.display = 'none';
+            } else if (scnnumber == 2) {
+                for (let i = 0; i < 10; i++) {
+                    cadd(Math.random() * (canvas.width - car_r * 7) + car_r, Math.random() * (canvas.height - car_r * 7) , Math.random() * 10 +5, Math.random() * 360);
+                }
+            }
+
+            democard.style.display = 'none';
+
+        }
         function RunClick() {
             isPlaying = !isPlaying;
             if (isPlaying) {
@@ -357,8 +400,9 @@
         function ResetCanvas() {
             Cars = [];
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            isPlaying = true
-            RunClick()
+            isPlaying = true;
+            document.getElementById('scn1').style.display = '';
+            RunClick();
         }
         Update();
 
