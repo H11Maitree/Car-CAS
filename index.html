@@ -27,7 +27,7 @@
 
 <body>
     <div class="fixed text-black max-w-md w-full p-6">
-        <p class="text-white text-xs p-1">This simulator is a part of group 29's project for CS2066 V.1.1</p>
+        <p class="text-white text-xs p-1">This simulator is a part of group 29's project for CS2066 V.1.2</p>
         <button class="bg-green-500 text-white font-bold rounded" id="resetbutton" onclick="ResetCanvas()"
             style="width: 50px; height: 60px;">Reset</button>
         <button class="bg-red-500 text-white font-bold rounded" id="runbutton" onclick="RunClick()"
@@ -247,9 +247,13 @@
                                 }
                             else{
                                 let total_ratio = (totalval_left-totalval_right)/(speed_weight_left+speed_weight_right)/180;
-                                if(total_ratio>0){
+                                if(total_ratio<1 && total_ratio>-1){
+                                    //rotate right as human reflection on UK stlye road
+                                    this.dd = -this.max_dd;
+                                    //this.dd = this.max_dd; US road
+                                }
+                                else if(total_ratio>0){
                                     this.dd = this.max_dd*total_ratio;
-                                    
                                 }
                             }
                             //console.log("td:%f x:%f y:%f dd:%f c:%d",totaldirec,this.x,this.y,this.dd,totalcar);
