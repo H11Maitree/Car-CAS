@@ -43,11 +43,27 @@
             <h2 class="text-3xl font-bold">Select Scnerio</h2>
             <button class="bg-green-500 text-white w-full font-bold rounded" id="scn1" onclick="AddScnerio(1)"
                 style="height: 30px;">Triagle Crash</button>
+                
+                <div class="p-1">
+                </div>
+    
+                <button class="bg-gray-500 text-white w-full font-bold rounded" id="scn3" onclick="AddScnerio(3)"
+                    style="height: 30px;">Back hit</button>
+                
+
             <div class="p-1">
             </div>
-            <button class="bg-green-500 text-white w-full font-bold rounded" id="scn1" onclick="AddScnerio(2)"
+            <button class="bg-gray-500 text-white w-full font-bold rounded" id="scn4" onclick="AddScnerio(4)"
+                    style="height: 30px;">Forth hit</button>
+                
+
+            <div class="p-1">
+            </div>
+
+            <button class="bg-blue-500 text-white w-full font-bold rounded" id="scn2" onclick="AddScnerio(2)"
                 style="height: 30px;">Random 10 Cars</button>
             <div class="p-1">
+
             </div>
             <button class="bg-red-500 text-white w-full font-bold rounded" id="clo1" onclick="AddScnerio(0)"
                 style="height: 30px;">Close this window</button>
@@ -380,6 +396,16 @@
                 for (let i = 0; i < 10; i++) {
                     cadd(Math.random() * (canvas.width - car_r * 7) + car_r, Math.random() * (canvas.height - car_r * 7) , Math.random() * 10 +5, Math.random() * 360);
                 }
+            } else if (scnnumber == 3) {
+                //back
+                cadd(Xcenter/1.5, Ycenter-10, 10, 0);
+                cadd(Xcenter/5, Ycenter+10, 14, 0);
+                document.getElementById('scn3').style.display = 'none';
+            }else if (scnnumber == 4) {
+                //forth
+                cadd(Xcenter + 300, Ycenter+15, 12, 180);
+                cadd(Xcenter - 300, Ycenter-15, 12, 0);
+                document.getElementById('scn3').style.display = 'none';
             }
 
             democard.style.display = 'none';
@@ -402,6 +428,8 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             isPlaying = true;
             document.getElementById('scn1').style.display = '';
+            document.getElementById('scn3').style.display = '';
+            document.getElementById('scn4').style.display = '';
             RunClick();
         }
         Update();
