@@ -208,7 +208,7 @@
                         Cars.forEach(element => {
                             if (this != element) {
                                 let distance = Math.sqrt(Math.pow(this.x - element.x, 2) + Math.pow(this.y - element.y, 2))
-                                if (distance < car_r * 2.05) {
+                                if (distance < car_r * 2.00) {
                                     this.status = 'crashed';
                                     element.status = 'crashed';
                                 }
