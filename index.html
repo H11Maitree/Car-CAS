@@ -26,6 +26,7 @@
 </head>
 
 <body>
+    
     <div class="fixed text-black max-w-md w-full p-6">
         <p class="text-white text-xs p-1">This simulator is a part of group 29's project for CS2066 V.1.2.4</p>
         <button class="bg-green-500 text-white font-bold rounded" id="resetbutton" onclick="ResetCanvas()"
@@ -37,6 +38,29 @@
 
         <button class="bg-blue-500 text-white font-bold rounded" id="demobutton" onclick="DemoClick()"
             style="width: 50px; height: 60px;">Demo</button>
+    </div>
+    <div class="fixed inset-0 flex items-center justify-center" id="welcome_card">
+        <div class="bg-white max-w-md w-full p-6">
+            <h2 class="text-3xl font-bold">How to use?</h2>
+                <div class="p-1">
+                </div>
+            <p class="text-m">&nbsp; Here, you can start by adding cars in canvas by hitting any empty space. After finishing adding cars then you can start the simulation by clicking RUN button. To stop the simulation, click STOP btton.</p>
+            <div class="p-1">
+            </div>
+            <p class="text-m">&nbsp; Remark: You can't add cars when the simulation is running; please click the stop button before adding more cars.</p>
+            <div class="p-1">
+                <br>
+            </div>
+            <h2 class="text-xl font-bold">Have no idea?</h2>
+            <div class="p-1">
+            </div>
+            <p class="text-m">&nbsp; We have prepared some instant demo for you. Please click DEMO button to see more.</p>
+            <div class="p-1">
+                <br>
+            </div>
+            <button class="bg-green-500 text-white w-full font-bold rounded" id="clo1" onclick="closewelcome()"
+                style="height: 30px;">Gotcha!</button>
+        </div>
     </div>
     <div class="fixed inset-0 flex items-center justify-center" id="democard" style="display: none;">
         <div class="bg-white max-w-md w-full p-6">
@@ -91,6 +115,10 @@
     <canvas id="playground"></canvas>
 
     <script>
+        function closewelcome(){
+            var wel_card= document.getElementById('welcome_card');
+            wel_card.style.display = 'none';
+        }
         var form = document.getElementById("myForm");
         function handleForm(event) { event.preventDefault(); }
         const runbutton = document.getElementById("runbutton");
